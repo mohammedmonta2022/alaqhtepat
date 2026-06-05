@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>منصة اختبار المناهج السعودية</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts (Cairo) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+  <!-- Header / Navbar -->
+  <header class="bg-white border-b border-slate-100 sticky top-0 z-40 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-20">
+        <!-- Logo and Title -->
+        <div class="flex items-center space-x-reverse space-x-3">
+          <div class="bg-emerald-600 text-white p-3 rounded-2xl shadow-md shadow-emerald-200">
+            <i class="fa-solid fa-graduation-cap text-2xl"></i>
+          </div>
+          <div>
+            <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">منصة اختبارات المناهج</h1>
+            <p class="text-xs text-slate-500 font-medium">خطوتك نحو التميز الدراسي</p>
+          </div>
+        </div>
+
+        <!-- Desktop Action Buttons -->
+        <div class="flex items-center space-x-reverse space-x-3">
+          <button id="adminBtn" class="flex items-center space-x-reverse space-x-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl font-semibold transition-all duration-200">
+            <i class="fa-solid fa-user-gear"></i>
+            <span>بوابة المشرف</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Class Navigation Bar (Responsive slider) -->
+    <div class="bg-emerald-50 border-t border-emerald-100/50 py-3 overflow-x-auto custom-scrollbar">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center space-x-reverse space-x-2 md:space-x-4 min-w-max" id="classesTabsList">
+          <!-- Loading placeholder or populated dynamic classes -->
+          <span class="text-slate-400 text-sm">جاري تحميل الصفوف الدراسية...</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main App Layout -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- Active Class Header -->
+    <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div>
+        <h2 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
+          <i class="fa-solid fa-book-open-reader text-emerald-600"></i>
+          <span id="currentClassNameDisplay">الصف الدراسي</span>
+        </h2>
+        <p class="text-slate-500 mt-1">اختر المادة التعليمية وابدأ الاختبار فوراً لقياس مستواك الدراسي.</p>
+      </div>
+      <div class="bg-emerald-100/60 text-emerald-800 px-4 py-2 rounded-xl text-sm font-semibold self-start md:self-auto flex items-center gap-2">
+        <span class="relative flex h-2.5 w-2.5">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+        </span>
+        المناهج المحدثة 1447هـ
+      </div>
+    </div>
+
+    <!-- Subjects Grid -->
+    <div id="subjectsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Dynamic Subject Cards Rendered Here -->
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-slate-900 text-slate-400 py-8 border-t border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-3">
+      <p class="font-semibold text-slate-300">جميع الحقوق محفوظة للمنصة التعليمية © 2026</p>
+      <p class="text-xs text-slate-500">تم التطوير لتسهيل وصول الطلاب للاختبارات الدورية والنهائية بسلاسة مطلقة.</p>
+    </div>
+  </footer>
+
+  <!-- Admin Login Modal -->
+  <div id="loginModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-100 transform transition-all duration-300 scale-95 opacity-0" id="loginModalContent">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+          <i class="fa-solid fa-lock text-emerald-600"></i>
+          بوابة المشرف الآمنة
+        </h3>
+        <button onclick="closeModal('loginModal')" class="text-slate-400 hover:text-slate-600 p-1.5 hover:bg-slate-100 rounded-full transition-colors">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-bold text-slate-700 mb-2">كلمة المرور للوحة التحكم</label>
+          <div class="relative">
+            <input type="password" id="adminPassword" placeholder="••••••••" class="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+              <i class="fa-solid fa-key"></i>
+            </div>
+          </div>
+        </div>
+        <p id="loginError" class="text-red-500 text-xs font-semibold hidden"><i class="fa-solid fa-triangle-exclamation mr-1"></i> عذراً، كلمة المرور غير صحيحة.</p>
+        <button id="submitLoginBtn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-4 rounded-2xl shadow-lg shadow-emerald-200 hover:shadow-none transition-all duration-200 flex items-center justify-center space-x-reverse space-x-2">
+          <span>دخول لوحة التحكم</span>
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Alert Notification Dialog (To avoid native alerts) -->
+  <div id="customAlert" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 text-center space-y-4">
+      <div class="w-16 h-16 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto text-2xl">
+        <i class="fa-solid fa-circle-exclamation"></i>
+      </div>
+      <div>
+        <h4 id="alertTitle" class="text-lg font-bold text-slate-900">الاختبار غير متوفر</h4>
+        <p id="alertMessage" class="text-slate-500 mt-2 text-sm leading-relaxed">المشرف لم يربط اختباراً لهذه المادة حتى الآن. يرجى المراجعة لاحقاً.</p>
+      </div>
+      <button onclick="closeModal('customAlert')" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-4 rounded-xl transition-colors">
+        حسناً، فهمت
+      </button>
+    </div>
+  </div>
+
+  <!-- Admin Dashboard Modal (Full Screen Layout) -->
+  <div id="adminDashboardModal" class="fixed inset-0 bg-slate-100/95 backdrop-blur-md z-50 overflow-y-auto hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      
+      <!-- Top Bar Dashboard -->
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-6 rounded-3xl border border-slate-200/60 shadow-sm mb-8 gap-4">
+        <div>
+          <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">لوحة التحكم</span>
+          <h2 class="text-2xl font-extrabold text-slate-900 mt-1 flex items-center gap-2">
+            <i class="fa-solid fa-sliders text-emerald-600"></i>
+            إدارة منصة الاختبارات والصفوف
+          </h2>
+        </div>
+        <div class="flex items-center space-x-reverse space-x-3 w-full sm:w-auto">
+          <button id="logoutBtn" class="flex-1 sm:flex-initial bg-rose-50 hover:bg-rose-100 text-rose-600 px-5 py-3 rounded-2xl font-bold transition-all text-sm flex items-center justify-center gap-2">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>تسجيل الخروج</span>
+          </button>
+          <button onclick="closeModal('adminDashboardModal')" class="flex-1 sm:flex-initial bg-slate-900 hover:bg-slate-800 text-white px-5 py-3 rounded-2xl font-bold transition-all text-sm flex items-center justify-center gap-2">
+            <i class="fa-solid fa-eye"></i>
+            <span>عرض كطالب</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Grid Content -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Left Side: Manage Classes -->
+        <div class="bg-white rounded-3xl border border-slate-200/60 shadow-sm p-6 space-y-6">
+          <div>
+            <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <i class="fa-solid fa-folder-tree text-emerald-600"></i>
+              إدارة الصفوف الدراسية
+            </h3>
+            <p class="text-xs text-slate-500 mt-1">تعديل، حذف أو إضافة صفوف دراسية للمنصة.</p>
+          </div>
+
+          <!-- Add Class Form -->
+          <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+            <label class="block text-xs font-bold text-slate-700 mb-2">إضافة صف دراسي جديد</label>
+            <div class="flex gap-2">
+              <input type="text" id="newClassNameInput" placeholder="مثال: الصف الأول المتوسط" class="flex-grow px-3 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all">
+              <button id="addNewClassBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold px-4 py-2 rounded-xl transition-all flex items-center gap-1 shrink-0">
+                <i class="fa-solid fa-plus"></i>
+                <span>إضافة</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Classes List -->
+          <div class="space-y-3">
+            <label class="block text-xs font-bold text-slate-700">الصفوف المتوفرة حالياً</label>
+            <div id="adminClassesList" class="space-y-2 max-h-[350px] overflow-y-auto custom-scrollbar pr-1">
+              <!-- Dynamically rendered classes with edit/delete buttons -->
+              <div class="text-center py-4 text-slate-400 text-sm">جاري تحميل البيانات...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Side: Edit Subjects & Exams in Selected Class -->
+        <div class="lg:col-span-2 bg-white rounded-3xl border border-slate-200/60 shadow-sm p-6 space-y-6">
+          <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-b border-slate-100 pb-5">
+            <div>
+              <span class="text-xs text-slate-400 font-bold">التحرير النشط</span>
+              <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2 mt-1">
+                <i class="fa-solid fa-pen-to-square text-emerald-600"></i>
+                تعديل مواد واختبارات: <span id="adminSelectedClassName" class="text-emerald-700">يرجى اختيار صف</span>
+              </h3>
+            </div>
+            <div class="bg-slate-100 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-lg shrink-0">
+              تلقائي الحفظ في الخلفية
+            </div>
+          </div>
+
+          <!-- Selected Class Subjects Controller -->
+          <div id="adminSubjectsController" class="space-y-6">
+            <div class="text-center py-12 text-slate-400">
+              <i class="fa-solid fa-hand-pointer text-4xl mb-3 block text-slate-300"></i>
+              يرجى اختيار صف دراسي من القائمة الجانبية لبدء تعديل المواد والروابط.
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Firebase Scripts & App Logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { 
+      getFirestore, 
+      doc, 
+      setDoc, 
+      getDoc, 
+      collection, 
+      query, 
+      getDocs, 
+      updateDoc, 
+      deleteDoc,
+      onSnapshot,
+      addDoc
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // --- Firebase Configuration ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyCA4tJeZiDUKqEezjlW8UPS9Xv-EnHfwrc",
+      authDomain: "unity-msaed.firebaseapp.com",
+      projectId: "unity-msaed",
+      storageBucket: "unity-msaed.firebasestorage.app",
+      messagingSenderId: "237281388685",
+      appId: "1:237281388685:web:7f26c8afd5dcce333b1ac4",
+      measurementId: "G-2P1EY8BPN4"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'unity-msaed';
+
+    // State Variables
+    let user = null;
+    let classesData = []; // Array of { id, name, order }
+    let activeClassId = null; // Currently selected class in UI
+    let selectedAdminClassId = null; // Currently editing class in Admin panel
+
+    // Default Fallback Subjects structure if a new class is made
+    const defaultSubjects = [
+      { id: 'arabic', name: 'اللغة العربية', icon: 'fa-book', color: 'from-amber-500 to-orange-600', shadow: 'shadow-orange-100', examUrl: '' },
+      { id: 'english', name: 'اللغة الإنجليزية', icon: 'fa-language', color: 'from-blue-500 to-indigo-600', shadow: 'shadow-indigo-100', examUrl: '' },
+      { id: 'math', name: 'الرياضيات', icon: 'fa-calculator', color: 'from-emerald-500 to-teal-600', shadow: 'shadow-emerald-100', examUrl: '' },
+      { id: 'science', name: 'العلوم', icon: 'fa-flask', color: 'from-violet-500 to-purple-600', shadow: 'shadow-purple-100', examUrl: '' }
+    ];
+
+    // Ensure Auth is setup (RULE 3 - Auth Before Queries)
+    const initAuth = async () => {
+      try {
+        await signInAnonymously(auth);
+      } catch (err) {
+        console.error("Firebase Signin Failed: ", err);
+      }
+    };
+    initAuth();
+
+    // Track Authentication state change
+    onAuthStateChanged(auth, (currentUser) => {
+      user = currentUser;
+      if (user) {
+        // Fetch and subscribe to our classes
+        subscribeToClassesData();
+      }
+    });
+
+    // Custom Path Definitions (Rule 1 Compliance)
+    const getClassesCollectionRef = () => {
+      return collection(db, 'artifacts', appId, 'public', 'data', 'classes');
+    };
+
+    const getClassDocRef = (classId) => {
+      return doc(db, 'artifacts', appId, 'public', 'data', 'classes', classId);
+    };
+
+    // Setup Realtime Database Stream for Classes (Rule 2 Compliant: simple query)
+    function subscribeToClassesData() {
+      if (!user) return;
+
+      const classesRef = getClassesCollectionRef();
+      onSnapshot(classesRef, (snapshot) => {
+        classesData = [];
+        snapshot.forEach((doc) => {
+          classesData.push({ id: doc.id, ...doc.data() });
+        });
+
+        // Simple sorting in JS memory (Rule 2 Compliance: no orderBy in Firestore query)
+        classesData.sort((a, b) => (a.order || 0) - (b.order || 0));
+
+        // Seed default classes if database is completely empty
+        if (classesData.length === 0) {
+          seedInitialData();
+        } else {
+          renderStudentInterface();
+          renderAdminInterface();
+        }
+      }, (error) => {
+        console.error("Error fetching Firestore changes:", error);
+      });
+    }
+
+    // Helper to seed initial Saudi curriculum structure on first run
+    async function seedInitialData() {
+      const initialClasses = [
+        { name: "الصف الأول الابتدائي", order: 1, subjects: defaultSubjects },
+        { name: "الصف الثاني الابتدائي", order: 2, subjects: defaultSubjects },
+        { name: "الصف الثالث الابتدائي", order: 3, subjects: defaultSubjects },
+        { name: "الصف الرابع الابتدائي", order: 4, subjects: defaultSubjects },
+        { name: "الصف الخامس الابتدائي", order: 5, subjects: defaultSubjects },
+        { name: "الصف السادس الابتدائي", order: 6, subjects: defaultSubjects },
+        { name: "الصف الأول المتوسط", order: 7, subjects: defaultSubjects },
+        { name: "الصف الثاني المتوسط", order: 8, subjects: defaultSubjects },
+        { name: "الصف الثالث المتوسط", order: 9, subjects: defaultSubjects }
+      ];
+
+      for (let cls of initialClasses) {
+        const ref = getClassesCollectionRef();
+        await addDoc(ref, cls);
+      }
+    }
+
+    // --- STUDENT INTERFACE RENDER ---
+    function renderStudentInterface() {
+      const tabsContainer = document.getElementById('classesTabsList');
+      if (!tabsContainer) return;
+
+      tabsContainer.innerHTML = '';
+
+      // Determine active class if not set
+      if (!activeClassId && classesData.length > 0) {
+        activeClassId = classesData[0].id;
+      }
+
+      classesData.forEach((cls) => {
+        const isActive = cls.id === activeClassId;
+        const btn = document.createElement('button');
+        btn.className = `px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 shrink-0 ${
+          isActive 
+            ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-200' 
+            : 'bg-white text-slate-600 hover:bg-emerald-100/50 hover:text-emerald-700'
+        }`;
+        btn.textContent = cls.name;
+        btn.addEventListener('click', () => {
+          activeClassId = cls.id;
+          renderStudentInterface();
+        });
+        tabsContainer.appendChild(btn);
+      });
+
+      // Render Selected Class Subjects
+      const activeClassObj = classesData.find(c => c.id === activeClassId);
+      const titleDisplay = document.getElementById('currentClassNameDisplay');
+      const subjectsContainer = document.getElementById('subjectsContainer');
+
+      if (activeClassObj) {
+        titleDisplay.textContent = activeClassObj.name;
+        subjectsContainer.innerHTML = '';
+
+        const subjects = activeClassObj.subjects || [];
+        if (subjects.length === 0) {
+          subjectsContainer.innerHTML = `
+            <div class="col-span-full text-center py-12 bg-white rounded-3xl border border-slate-200/60 p-8 text-slate-400">
+              <i class="fa-solid fa-box-open text-4xl mb-3 block text-slate-300"></i>
+              لم تتم إضافة أي مواد دراسية لهذا الصف حتى الآن.
+            </div>
+          `;
+          return;
+        }
+
+        subjects.forEach((subj) => {
+          const card = document.createElement('div');
+          card.className = `bg-white rounded-3xl border border-slate-100 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group h-full`;
+          
+          // Use specific colors/shadows or defaults
+          const gradient = subj.color || 'from-emerald-500 to-teal-600';
+          const shadowClass = subj.shadow || 'shadow-emerald-100';
+          const iconClass = subj.icon || 'fa-book-open';
+
+          card.innerHTML = `
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="w-14 h-14 bg-gradient-to-tr ${gradient} rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg ${shadowClass} group-hover:scale-110 transition-transform duration-300">
+                  <i class="fa-solid ${iconClass}"></i>
+                </div>
+                ${subj.examUrl 
+                  ? `<span class="bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full"><i class="fa-solid fa-check-circle mr-1"></i> جاهز للاختبار</span>` 
+                  : `<span class="bg-amber-50 text-amber-700 text-xs font-bold px-3 py-1 rounded-full"><i class="fa-solid fa-hourglass-start mr-1"></i> قريباً</span>`
+                }
+              </div>
+              <div class="space-y-1">
+                <h3 class="text-lg font-bold text-slate-800">${subj.name}</h3>
+                <p class="text-xs text-slate-400">المنهج الأساسي المعتمد من وزارة التعليم</p>
+              </div>
+            </div>
+            
+            <div class="pt-6 mt-6 border-t border-slate-50">
+              <button class="test-btn w-full py-3.5 px-4 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${
+                subj.examUrl 
+                  ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-100' 
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+              }">
+                <span>اختبر الآن</span>
+                <i class="fa-solid fa-arrow-left-long text-xs group-hover:-translate-x-1 transition-transform"></i>
+              </button>
+            </div>
+          `;
+
+          // Handle click event on exam button
+          card.querySelector('.test-btn').addEventListener('click', () => {
+            if (subj.examUrl) {
+              // Open url in a new tab safely
+              window.open(subj.examUrl, '_blank');
+            } else {
+              // Inform the student nicely
+              showAlert('تنبيه من المشرف', 'عذراً يا بطل! لم يقم المشرف بربط اختبار هذه المادة حتى الآن. يرجى المراجعة والتحقق لاحقاً.');
+            }
+          });
+
+          subjectsContainer.appendChild(card);
+        });
+      }
+    }
+
+    // --- ADMIN INTERFACE RENDER ---
+    function renderAdminInterface() {
+      const adminClassesList = document.getElementById('adminClassesList');
+      if (!adminClassesList) return;
+
+      adminClassesList.innerHTML = '';
+
+      classesData.forEach((cls) => {
+        const isEditingThis = cls.id === selectedAdminClassId;
+        const item = document.createElement('div');
+        item.className = `p-3 rounded-2xl flex items-center justify-between transition-all ${
+          isEditingThis 
+            ? 'bg-emerald-50 border border-emerald-200/80 text-emerald-900 font-semibold' 
+            : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-100'
+        }`;
+
+        item.innerHTML = `
+          <button class="select-class-btn text-right flex-grow font-bold text-sm truncate pl-2">
+            ${cls.name}
+          </button>
+          <div class="flex items-center space-x-reverse space-x-1 shrink-0">
+            <button class="edit-name-btn text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-white transition-colors" title="تعديل الاسم">
+              <i class="fa-solid fa-pen text-xs"></i>
+            </button>
+            <button class="delete-class-btn text-rose-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 transition-colors" title="حذف الصف">
+              <i class="fa-solid fa-trash-can text-xs"></i>
+            </button>
+          </div>
+        `;
+
+        // Event: Select class to edit its subjects
+        item.querySelector('.select-class-btn').addEventListener('click', () => {
+          selectAdminClass(cls.id);
+        });
+
+        // Event: Rename Class
+        item.querySelector('.edit-name-btn').addEventListener('click', () => {
+          const newName = prompt('أدخل الاسم الجديد للصف الدراسي:', cls.name);
+          if (newName && newName.trim() !== '') {
+            updateClassName(cls.id, newName.trim());
+          }
+        });
+
+        // Event: Delete Class
+        item.querySelector('.delete-class-btn').addEventListener('click', () => {
+          const confirmation = confirm(`هل أنت متأكد من حذف صف "${cls.name}" مع جميع مواده؟ لا يمكن التراجع عن هذا القرار.`);
+          if (confirmation) {
+            deleteClass(cls.id);
+          }
+        });
+
+        adminClassesList.appendChild(item);
+      });
+
+      // Maintain rendering active editing window
+      renderSelectedClassSubjectsManager();
+    }
+
+    // Action: Change selected admin class
+    function selectAdminClass(classId) {
+      selectedAdminClassId = classId;
+      // Active display update
+      const activeClass = classesData.find(c => c.id === classId);
+      const displayLabel = document.getElementById('adminSelectedClassName');
+      if (displayLabel && activeClass) {
+        displayLabel.textContent = activeClass.name;
+      }
+      renderAdminInterface();
+    }
+
+    // Action: Rename class in Firestore
+    async function updateClassName(classId, newName) {
+      if (!user) return;
+      try {
+        const classRef = getClassDocRef(classId);
+        await updateDoc(classRef, { name: newName });
+      } catch (err) {
+        console.error("Failed to rename class: ", err);
+      }
+    }
+
+    // Action: Delete class from Firestore
+    async function deleteClass(classId) {
+      if (!user) return;
+      try {
+        const classRef = getClassDocRef(classId);
+        await deleteDoc(classRef);
+        if (selectedAdminClassId === classId) {
+          selectedAdminClassId = null;
+          const displayLabel = document.getElementById('adminSelectedClassName');
+          if (displayLabel) displayLabel.textContent = "يرجى اختيار صف";
+        }
+      } catch (err) {
+        console.error("Failed to delete class: ", err);
+      }
+    }
+
+    // Action: Render/Edit inside Subjects panel
+    function renderSelectedClassSubjectsManager() {
+      const container = document.getElementById('adminSubjectsController');
+      if (!container) return;
+
+      const activeClass = classesData.find(c => c.id === selectedAdminClassId);
+      if (!activeClass) {
+        container.innerHTML = `
+          <div class="text-center py-12 text-slate-400">
+            <i class="fa-solid fa-hand-pointer text-4xl mb-3 block text-slate-300"></i>
+            يرجى اختيار صف دراسي من القائمة الجانبية لبدء تعديل المواد والروابط.
+          </div>
+        `;
+        return;
+      }
+
+      const subjects = activeClass.subjects || [];
+      container.innerHTML = '';
+
+      // Controls to add a custom subject
+      const addSubjectHeader = document.createElement('div');
+      addSubjectHeader.className = 'bg-emerald-50/50 p-4 rounded-2xl border border-emerald-100/60 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4';
+      addSubjectHeader.innerHTML = `
+        <div>
+          <h4 class="text-sm font-bold text-emerald-900">إضافة مادة مخصصة جديدة</h4>
+          <p class="text-xs text-emerald-700">أضف مواد إضافية بجانب المواد الأساسية.</p>
+        </div>
+        <button id="addSubjectBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all flex items-center gap-1.5 self-end sm:self-auto">
+          <i class="fa-solid fa-plus-circle"></i>
+          <span>إضافة مادة</span>
+        </button>
+      `;
+      addSubjectHeader.querySelector('#addSubjectBtn').addEventListener('click', () => {
+        addNewSubjectPrompt(activeClass.id, subjects);
+      });
+      container.appendChild(addSubjectHeader);
+
+      // Render individual subject editors
+      const subjectsListWrap = document.createElement('div');
+      subjectsListWrap.className = 'space-y-4';
+
+      subjects.forEach((subj, idx) => {
+        const item = document.createElement('div');
+        item.className = 'bg-slate-50 rounded-2xl p-4 sm:p-5 border border-slate-200/50 space-y-4';
+        
+        item.innerHTML = `
+          <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+            <div class="flex items-center space-x-reverse space-x-3">
+              <div class="w-10 h-10 rounded-xl bg-slate-200 text-slate-600 flex items-center justify-center text-lg">
+                <i class="fa-solid ${subj.icon || 'fa-book-open'}"></i>
+              </div>
+              <div class="flex-grow">
+                <input type="text" value="${subj.name}" class="subj-name-input bg-transparent border-b border-transparent hover:border-slate-300 focus:border-emerald-600 focus:outline-none font-bold text-slate-800 text-base py-0.5 transition-all w-full sm:w-auto" placeholder="اسم المادة">
+              </div>
+            </div>
+            <div class="flex items-center space-x-reverse space-x-2">
+              <button class="delete-subj-btn text-rose-500 hover:text-rose-700 text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-rose-50 transition-colors flex items-center gap-1">
+                <i class="fa-solid fa-trash-can"></i>
+                <span>حذف المادة</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div class="md:col-span-2">
+              <label class="block text-xs font-bold text-slate-500 mb-1">رابط اختبار المادة (مثال: نماذج قوقل، فورمز)</label>
+              <div class="relative">
+                <input type="url" value="${subj.examUrl || ''}" class="subj-url-input w-full pl-3 pr-9 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all" placeholder="https://forms.office.com/r/...">
+                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
+                  <i class="fa-solid fa-link text-xs"></i>
+                </div>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-500 mb-1">تعديل أيقونة المادة</label>
+              <select class="subj-icon-select w-full px-2 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all bg-white">
+                <option value="fa-book" ${subj.icon === 'fa-book' ? 'selected' : ''}>كتاب عربي</option>
+                <option value="fa-language" ${subj.icon === 'fa-language' ? 'selected' : ''}>لغة إنجليزية</option>
+                <option value="fa-calculator" ${subj.icon === 'fa-calculator' ? 'selected' : ''}>آلة حاسبة رياضيات</option>
+                <option value="fa-flask" ${subj.icon === 'fa-flask' ? 'selected' : ''}>مختبر علوم</option>
+                <option value="fa-mosque" ${subj.icon === 'fa-mosque' ? 'selected' : ''}>مسجد/تربية إسلامية</option>
+                <option value="fa-lightbulb" ${subj.icon === 'fa-lightbulb' ? 'selected' : ''}>فكرة/ذكاء</option>
+                <option value="fa-laptop-code" ${subj.icon === 'fa-laptop-code' ? 'selected' : ''}>حاسب آلي</option>
+                <option value="fa-paint-brush" ${subj.icon === 'fa-paint-brush' ? 'selected' : ''}>تربية فنية</option>
+              </select>
+            </div>
+          </div>
+        `;
+
+        // Interactive Change listeners with automated debounced/immediate save to Firestore
+        const nameInput = item.querySelector('.subj-name-input');
+        const urlInput = item.querySelector('.subj-url-input');
+        const iconSelect = item.querySelector('.subj-icon-select');
+        const deleteBtn = item.querySelector('.delete-subj-btn');
+
+        const triggerSave = async () => {
+          const updatedSubjects = [...subjects];
+          updatedSubjects[idx] = {
+            ...updatedSubjects[idx],
+            name: nameInput.value.trim(),
+            examUrl: urlInput.value.trim(),
+            icon: iconSelect.value
+          };
+          await saveClassSubjects(activeClass.id, updatedSubjects);
+        };
+
+        nameInput.addEventListener('change', triggerSave);
+        urlInput.addEventListener('change', triggerSave);
+        iconSelect.addEventListener('change', triggerSave);
+
+        deleteBtn.addEventListener('click', async () => {
+          if (confirm(`هل أنت متأكد من حذف مادة "${subj.name}"؟`)) {
+            const updatedSubjects = subjects.filter((_, i) => i !== idx);
+            await saveClassSubjects(activeClass.id, updatedSubjects);
+          }
+        });
+
+        subjectsListWrap.appendChild(item);
+      });
+
+      container.appendChild(subjectsListWrap);
+    }
+
+    // Helper: Push subjects list updates to Firestore
+    async function saveClassSubjects(classId, updatedSubjects) {
+      if (!user) return;
+      try {
+        const classRef = getClassDocRef(classId);
+        await updateDoc(classRef, { subjects: updatedSubjects });
+      } catch (err) {
+        console.error("Failed to update subjects structure: ", err);
+      }
+    }
+
+    // Helper: Modal to add new subject
+    async function addNewSubjectPrompt(classId, existingSubjects) {
+      const subjectName = prompt("أدخل اسم المادة الجديدة (مثال: الحاسب الآلي):");
+      if (!subjectName || subjectName.trim() === "") return;
+
+      // Select random gradient styling to match beautiful cards
+      const gradients = [
+        { color: 'from-amber-500 to-orange-600', shadow: 'shadow-orange-100' },
+        { color: 'from-blue-500 to-indigo-600', shadow: 'shadow-indigo-100' },
+        { color: 'from-emerald-500 to-teal-600', shadow: 'shadow-emerald-100' },
+        { color: 'from-violet-500 to-purple-600', shadow: 'shadow-purple-100' },
+        { color: 'from-rose-500 to-pink-600', shadow: 'shadow-pink-100' },
+        { color: 'from-cyan-500 to-blue-600', shadow: 'shadow-blue-100' }
+      ];
+      const randomGradient = gradients[Math.floor(Math.random() * gradients.length)];
+
+      const newSubject = {
+        id: 'subject_' + Date.now(),
+        name: subjectName.trim(),
+        icon: 'fa-book-open',
+        color: randomGradient.color,
+        shadow: randomGradient.shadow,
+        examUrl: ''
+      };
+
+      const updatedSubjects = [...existingSubjects, newSubject];
+      await saveClassSubjects(classId, updatedSubjects);
+    }
+
+    // Action: Create a brand new Class structure
+    document.getElementById('addNewClassBtn').addEventListener('click', async () => {
+      const input = document.getElementById('newClassNameInput');
+      const name = input.value.trim();
+      if (!name) return;
+
+      // Assign sequential high order value
+      const nextOrder = classesData.length > 0 ? Math.max(...classesData.map(c => c.order || 0)) + 1 : 1;
+
+      try {
+        const ref = getClassesCollectionRef();
+        await addDoc(ref, {
+          name: name,
+          order: nextOrder,
+          subjects: defaultSubjects
+        });
+        input.value = '';
+      } catch (err) {
+        console.error("Failed to add class: ", err);
+      }
+    });
+
+    // --- APP AUTH / LOGIN / LOGOUT MODALS CONTROLS ---
+
+    // Toggle Modals Utility
+    window.openModal = function(modalId) {
+      const modal = document.getElementById(modalId);
+      if (!modal) return;
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        const content = modal.querySelector('.transform');
+        if (content) {
+          content.classList.remove('scale-95', 'opacity-0');
+          content.classList.add('scale-100', 'opacity-100');
+        }
+      }, 50);
+    };
+
+    window.closeModal = function(modalId) {
+      const modal = document.getElementById(modalId);
+      if (!modal) return;
+      const content = modal.querySelector('.transform');
+      if (content) {
+        content.classList.add('scale-95', 'opacity-0');
+        content.classList.remove('scale-100', 'opacity-100');
+      }
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 200);
+    };
+
+    // Custom non-blocking alert function
+    window.showAlert = function(title, msg) {
+      const titleEl = document.getElementById('alertTitle');
+      const msgEl = document.getElementById('alertMessage');
+      if (titleEl && msgEl) {
+        titleEl.textContent = title;
+        msgEl.textContent = msg;
+        openModal('customAlert');
+      }
+    };
+
+    // Trigger Login Modal
+    document.getElementById('adminBtn').addEventListener('click', () => {
+      // Check if already authenticated via session/local token simulation
+      if (localStorage.getItem('isAdminAuth') === 'true') {
+        openModal('adminDashboardModal');
+        // Pre-select first class if none chosen yet
+        if (!selectedAdminClassId && classesData.length > 0) {
+          selectAdminClass(classesData[0].id);
+        }
+      } else {
+        openModal('loginModal');
+      }
+    });
+
+    // Handle Admin Password Login Check
+    document.getElementById('submitLoginBtn').addEventListener('click', () => {
+      const passwordInput = document.getElementById('adminPassword');
+      const errEl = document.getElementById('loginError');
+
+      if (passwordInput.value === 'moh2022m') {
+        errEl.classList.add('hidden');
+        passwordInput.value = '';
+        localStorage.setItem('isAdminAuth', 'true');
+        closeModal('loginModal');
+        
+        // Open Admin Dashboard Panel
+        setTimeout(() => {
+          openModal('adminDashboardModal');
+          if (!selectedAdminClassId && classesData.length > 0) {
+            selectAdminClass(classesData[0].id);
+          }
+        }, 300);
+      } else {
+        errEl.classList.remove('hidden');
+      }
+    });
+
+    // Enter Key to submit password
+    document.getElementById('adminPassword').addEventListener('keyup', (e) => {
+      if (e.key === 'Enter') {
+        document.getElementById('submitLoginBtn').click();
+      }
+    });
+
+    // Handle Logout
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('isAdminAuth');
+      closeModal('adminDashboardModal');
+    });
+
+  </script>
+</body>
+</html>
