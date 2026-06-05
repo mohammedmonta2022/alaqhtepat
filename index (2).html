@@ -1,0 +1,1602 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>منصة اختبار المناهج السعودية</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts (Cairo) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    
+    /* Animations */
+    @keyframes bounce-subtle {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+    .animate-bounce-subtle {
+      animation: bounce-subtle 2s infinite ease-in-out;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
+    }
+    .animate-shake {
+      animation: shake 0.3s ease-in-out;
+    }
+    @keyframes confetti-fall {
+      0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(280px) rotate(360deg); opacity: 0; }
+    }
+    .confetti-particle {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 30;
+      animation: confetti-fall 1.5s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+  <!-- Header / Navbar -->
+  <header class="bg-white border-b border-slate-100 sticky top-0 z-40 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-20">
+        <!-- Logo and Title -->
+        <div class="flex items-center space-x-reverse space-x-3">
+          <div class="bg-emerald-600 text-white p-3 rounded-2xl shadow-md shadow-emerald-200">
+            <i class="fa-solid fa-graduation-cap text-2xl"></i>
+          </div>
+          <div>
+            <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">منصة اختبارات المناهج</h1>
+            <p class="text-xs text-slate-500 font-medium">خطوتك نحو التميز الدراسي</p>
+          </div>
+        </div>
+
+        <!-- Desktop Action Buttons -->
+        <div class="flex items-center space-x-reverse space-x-3">
+          <button id="adminBtn" class="flex items-center space-x-reverse space-x-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl font-semibold transition-all duration-200">
+            <i class="fa-solid fa-user-gear"></i>
+            <span>بوابة المشرف</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Class Navigation Bar -->
+    <div class="bg-emerald-50 border-t border-emerald-100/50 py-3 overflow-x-auto custom-scrollbar">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center space-x-reverse space-x-2 md:space-x-4 min-w-max" id="classesTabsList">
+          <span class="text-slate-400 text-sm">جاري تحميل الصفوف الدراسية...</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main App Layout -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- Active Class Header -->
+    <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div>
+        <h2 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
+          <i class="fa-solid fa-book-open-reader text-emerald-600"></i>
+          <span id="currentClassNameDisplay">الصف الدراسي</span>
+        </h2>
+        <p class="text-slate-500 mt-1">اختر المادة التعليمية وابدأ الاختبار التفاعلي فوراً لقياس مستواك.</p>
+      </div>
+      <div class="bg-emerald-100/60 text-emerald-800 px-4 py-2 rounded-xl text-sm font-semibold self-start md:self-auto flex items-center gap-2">
+        <span class="relative flex h-2.5 w-2.5">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+        </span>
+        المناهج المحدثة 1447هـ
+      </div>
+    </div>
+
+    <!-- Subjects Grid -->
+    <div id="subjectsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Dynamic Subject Cards Rendered Here -->
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-slate-900 text-slate-400 py-8 border-t border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-3">
+      <p class="font-semibold text-slate-300">جميع الحقوق محفوظة للمنصة التعليمية © 2026</p>
+      <p class="text-xs text-slate-500">تم التطوير لتسهيل وصول الطلاب للاختبارات التفاعلية مباشرة ومراجعة أدائهم.</p>
+    </div>
+  </footer>
+
+  <!-- Admin Login Modal -->
+  <div id="loginModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-100 transform transition-all duration-300 scale-95 opacity-0" id="loginModalContent">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+          <i class="fa-solid fa-lock text-emerald-600"></i>
+          بوابة المشرف الآمنة
+        </h3>
+        <button onclick="closeModal('loginModal')" class="text-slate-400 hover:text-slate-600 p-1.5 hover:bg-slate-100 rounded-full transition-colors">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-bold text-slate-700 mb-2">كلمة المرور للوحة التحكم</label>
+          <div class="relative">
+            <input type="password" id="adminPassword" placeholder="••••••••" class="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+              <i class="fa-solid fa-key"></i>
+            </div>
+          </div>
+        </div>
+        <p id="loginError" class="text-red-500 text-xs font-semibold hidden"><i class="fa-solid fa-triangle-exclamation mr-1"></i> عذراً، كلمة المرور غير صحيحة.</p>
+        <button id="submitLoginBtn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-4 rounded-2xl shadow-lg shadow-emerald-200 hover:shadow-none transition-all duration-200 flex items-center justify-center space-x-reverse space-x-2">
+          <span>دخول لوحة التحكم</span>
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Alert Notification Dialog (To avoid native alerts) -->
+  <div id="customAlert" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 text-center space-y-4">
+      <div class="w-16 h-16 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto text-2xl">
+        <i class="fa-solid fa-circle-exclamation"></i>
+      </div>
+      <div>
+        <h4 id="alertTitle" class="text-lg font-bold text-slate-900">الاختبار غير متوفر</h4>
+        <p id="alertMessage" class="text-slate-500 mt-2 text-sm leading-relaxed">المشرف لم يربط اختباراً لهذه المادة حتى الآن. يرجى المراجعة لاحقاً.</p>
+      </div>
+      <button onclick="closeModal('customAlert')" class="w-full bg-slate-950 hover:bg-slate-800 text-white font-bold py-3 px-4 rounded-xl transition-colors">
+        حسناً، فهمت
+      </button>
+    </div>
+  </div>
+
+  <!-- Interactive Quiz Player Modal (For Students) -->
+  <div id="quizPlayerModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-4 hidden">
+    <!-- Confetti absolute emitter wrapper -->
+    <div id="confettiContainer" class="absolute inset-0 pointer-events-none overflow-hidden z-40 rounded-3xl"></div>
+
+    <div class="bg-white rounded-3xl max-w-3xl w-full max-h-[95vh] overflow-y-auto custom-scrollbar shadow-2xl border border-slate-100 flex flex-col transform transition-all duration-300 scale-95 opacity-0 z-10" id="quizPlayerContent">
+      
+      <!-- Quiz Header -->
+      <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50 rounded-t-3xl sticky top-0 z-10">
+        <div>
+          <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full" id="quizHeaderBadge">اختبار تجريبي</span>
+          <h3 id="quizTitle" class="text-xl font-extrabold text-slate-900 mt-1">اسم الاختبار التفاعلي</h3>
+        </div>
+        <button id="closeQuizPlayerBtn" class="text-slate-400 hover:text-rose-600 p-2 hover:bg-rose-50 rounded-full transition-all">
+          <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+      </div>
+
+      <!-- Quiz Body / Interactive Section -->
+      <div class="p-6 sm:p-8 flex-grow">
+        
+        <!-- Welcome Screen (Optional/Automatic) -->
+        <div id="quizStartScreen" class="text-center py-8 space-y-6">
+          <div class="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-4xl">
+            <i class="fa-solid fa-file-signature"></i>
+          </div>
+          <div class="space-y-2">
+            <h4 class="text-xl font-bold text-slate-800">مستعد لبدء التحدي؟</h4>
+            <p class="text-slate-500 max-w-md mx-auto text-sm">يحتوي هذا الاختبار على أسئلة مخصصة لقياس مستواك المعرفي وتصحيحها فورياً لتتعلم من الأخطاء.</p>
+          </div>
+          <button id="startQuizBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-10 rounded-2xl shadow-lg shadow-emerald-200 transition-all">
+            ابدأ الاختبار الآن 🚀
+          </button>
+        </div>
+
+        <!-- Question Active State -->
+        <div id="quizQuestionScreen" class="hidden space-y-6">
+          <!-- Progress -->
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-slate-500 font-bold" id="quizProgressText">السؤال 1 من 5</span>
+            <div class="w-32 bg-slate-100 h-2 rounded-full overflow-hidden">
+              <div id="quizProgressBar" class="bg-emerald-500 h-full transition-all duration-300" style="width: 20%;"></div>
+            </div>
+          </div>
+
+          <!-- Question Content -->
+          <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+            <h4 id="questionText" class="text-lg font-bold text-slate-800 leading-relaxed">نص السؤال يظهر هنا؟</h4>
+          </div>
+
+          <!-- Options Grid -->
+          <div id="optionsContainer" class="grid grid-cols-1 gap-3">
+            <!-- Options buttons render dynamically -->
+          </div>
+
+          <!-- Action Navigation -->
+          <div class="flex justify-between items-center pt-4 border-t border-slate-100">
+            <button id="prevQuestionBtn" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-5 rounded-xl text-sm transition-all flex items-center gap-2">
+              <i class="fa-solid fa-arrow-right"></i>
+              <span>السؤال السابق</span>
+            </button>
+            <button id="nextQuestionBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-6 rounded-xl text-sm transition-all flex items-center gap-2">
+              <span id="nextBtnText">السؤال التالي</span>
+              <i class="fa-solid fa-arrow-left" id="nextBtnIcon"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Result / Scoring Screen -->
+        <div id="quizResultScreen" class="hidden text-center py-6 space-y-6">
+          <div id="resultIconBox" class="w-24 h-24 rounded-full flex items-center justify-center mx-auto text-5xl">
+            <!-- Icon changed via JS -->
+          </div>
+          <div class="space-y-2">
+            <h4 id="resultGreeting" class="text-2xl font-extrabold text-slate-900">ممتاز جداً! 🎉</h4>
+            <p id="resultFeedback" class="text-slate-500 max-w-md mx-auto text-sm">لقد أكملت الاختبار وحصلت على نتيجة رائعة جداً.</p>
+          </div>
+
+          <!-- Stats Grid -->
+          <div class="grid grid-cols-2 max-w-sm mx-auto bg-slate-50 rounded-2xl p-4 border border-slate-100 divide-x divide-x-reverse divide-slate-200">
+            <div>
+              <span class="block text-2xl font-extrabold text-emerald-600" id="resultCorrectCount">5 / 5</span>
+              <span class="text-xs font-bold text-slate-400">الإجابات الصحيحة</span>
+            </div>
+            <div>
+              <span class="block text-2xl font-extrabold text-emerald-600" id="resultPercentage">100%</span>
+              <span class="text-xs font-bold text-slate-400">النسبة المئوية</span>
+            </div>
+          </div>
+
+          <!-- Buttons -->
+          <div class="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto pt-4">
+            <button id="reviewAnswersBtn" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 px-6 rounded-xl transition-all text-sm flex items-center justify-center gap-2">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <span>مراجعة الإجابات</span>
+            </button>
+            <button id="restartQuizBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-xl transition-all text-sm flex items-center justify-center gap-2">
+              <i class="fa-solid fa-rotate-right"></i>
+              <span>إعادة المحاولة</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Answer Review Screen -->
+        <div id="quizReviewScreen" class="hidden space-y-6">
+          <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+            <h4 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+              <i class="fa-solid fa-receipt text-emerald-600"></i>
+              تقرير المراجعة وتصحيح الإجابات
+            </h4>
+            <button id="backToResultBtn" class="text-emerald-600 hover:text-emerald-700 font-bold text-sm">
+              العودة للنتيجة
+            </button>
+          </div>
+          <div id="reviewListContainer" class="space-y-6 max-h-[60vh] overflow-y-auto custom-scrollbar pr-1">
+            <!-- Review items render dynamically with full professional visual highlighting -->
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Universal Action Confirmation Modal (No browser alert) -->
+  <div id="confirmModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 text-center space-y-4 transform transition-all duration-300 scale-95 opacity-0" id="confirmModalContent">
+      <div class="w-16 h-16 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mx-auto text-2xl" id="confirmIcon">
+        <i class="fa-solid fa-trash-can"></i>
+      </div>
+      <div>
+        <h4 id="confirmTitle" class="text-lg font-bold text-slate-900">تأكيد الإجراء</h4>
+        <p id="confirmMessage" class="text-slate-500 mt-2 text-sm leading-relaxed">هل أنت متأكد من الاستمرار؟</p>
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button id="confirmCancelBtn" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-4 rounded-xl transition-colors text-sm">إلغاء</button>
+        <button id="confirmSubmitBtn" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 px-4 rounded-xl transition-colors text-sm">تأكيد</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Universal Text Input Modal (No browser prompt) -->
+  <div id="inputModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 transform transition-all duration-300 scale-95 opacity-0" id="inputModalContent">
+      <div class="flex justify-between items-center mb-4">
+        <h3 id="inputModalTitle" class="text-lg font-bold text-slate-900">إدخال البيانات</h3>
+        <button onclick="closeModal('inputModal')" class="text-slate-400 hover:text-slate-600 p-1 rounded-full"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="space-y-4">
+        <input type="text" id="modalTextInput" class="w-full px-4 py-3 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all text-sm" placeholder="اكتب هنا...">
+        <button id="inputModalSubmitBtn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-2xl shadow-lg shadow-emerald-200 transition-all text-sm">تأكيد وحفظ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Dashboard Modal (Full Screen Layout) -->
+  <div id="adminDashboardModal" class="fixed inset-0 bg-slate-100/95 backdrop-blur-md z-50 overflow-y-auto hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      
+      <!-- Top Bar Dashboard -->
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-6 rounded-3xl border border-slate-200/60 shadow-sm mb-8 gap-4">
+        <div>
+          <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">لوحة التحكم</span>
+          <h2 class="text-2xl font-extrabold text-slate-900 mt-1 flex items-center gap-2">
+            <i class="fa-solid fa-sliders text-emerald-600"></i>
+            إدارة منصة الاختبارات والصفوف
+          </h2>
+        </div>
+        <div class="flex items-center space-x-reverse space-x-3 w-full sm:w-auto">
+          <button id="logoutBtn" class="flex-1 sm:flex-initial bg-rose-50 hover:bg-rose-100 text-rose-600 px-5 py-3 rounded-2xl font-bold transition-all text-sm flex items-center justify-center gap-2">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>تسجيل الخروج</span>
+          </button>
+          <button onclick="closeModal('adminDashboardModal')" class="flex-1 sm:flex-initial bg-slate-900 hover:bg-slate-800 text-white px-5 py-3 rounded-2xl font-bold transition-all text-sm flex items-center justify-center gap-2">
+            <i class="fa-solid fa-eye"></i>
+            <span>عرض كطالب</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Grid Content -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Left Side: Manage Classes -->
+        <div class="bg-white rounded-3xl border border-slate-200/60 shadow-sm p-6 space-y-6">
+          <div>
+            <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <i class="fa-solid fa-folder-tree text-emerald-600"></i>
+              إدارة الصفوف الدراسية
+            </h3>
+            <p class="text-xs text-slate-500 mt-1">تعديل، حذف أو إضافة صفوف دراسية للمنصة.</p>
+          </div>
+
+          <!-- Add Class Form -->
+          <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+            <label class="block text-xs font-bold text-slate-700 mb-2">إضافة صف دراسي جديد</label>
+            <div class="flex gap-2">
+              <input type="text" id="newClassNameInput" placeholder="مثال: الصف الأول المتوسط" class="flex-grow px-3 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all">
+              <button id="addNewClassBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold px-4 py-2 rounded-xl transition-all flex items-center gap-1 shrink-0">
+                <i class="fa-solid fa-plus"></i>
+                <span>إضافة</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Classes List -->
+          <div class="space-y-3">
+            <label class="block text-xs font-bold text-slate-700">الصفوف المتوفرة حالياً</label>
+            <div id="adminClassesList" class="space-y-2 max-h-[350px] overflow-y-auto custom-scrollbar pr-1">
+              <div class="text-center py-4 text-slate-400 text-sm">جاري تحميل البيانات...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Side: Edit Subjects & Exams in Selected Class -->
+        <div class="lg:col-span-2 bg-white rounded-3xl border border-slate-200/60 shadow-sm p-6 space-y-6">
+          <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-b border-slate-100 pb-5">
+            <div>
+              <span class="text-xs text-slate-400 font-bold">التحرير النشط</span>
+              <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2 mt-1">
+                <i class="fa-solid fa-pen-to-square text-emerald-600"></i>
+                تعديل مواد واختبارات: <span id="adminSelectedClassName" class="text-emerald-700">يرجى اختيار صف</span>
+              </h3>
+            </div>
+            <div class="bg-slate-100 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-lg shrink-0">
+              تلقائي الحفظ في الخلفية
+            </div>
+          </div>
+
+          <!-- Selected Class Subjects Controller -->
+          <div id="adminSubjectsController" class="space-y-6">
+            <div class="text-center py-12 text-slate-400">
+              <i class="fa-solid fa-hand-pointer text-4xl mb-3 block text-slate-300"></i>
+              يرجى اختيار صف دراسي من القائمة الجانبية لبدء تعديل المواد والروابط.
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Realtime Copy Toast Alert -->
+  <div id="copyToast" class="fixed bottom-5 left-5 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl z-50 flex items-center gap-2 transform translate-y-20 opacity-0 transition-all duration-300">
+    <i class="fa-solid fa-circle-check text-emerald-500"></i>
+    <span class="text-sm font-bold">تم نسخ موجه الـ AI بنجاح!</span>
+  </div>
+
+  <!-- Firebase Scripts & App Logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { 
+      getAuth, 
+      signInAnonymously, 
+      signInWithCustomToken, 
+      onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { 
+      getFirestore, 
+      doc, 
+      setDoc, 
+      getDoc, 
+      collection, 
+      query, 
+      getDocs, 
+      updateDoc, 
+      deleteDoc,
+      onSnapshot,
+      addDoc
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // --- Firebase Configuration ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyCA4tJeZiDUKqEezjlW8UPS9Xv-EnHfwrc",
+      authDomain: "unity-msaed.firebaseapp.com",
+      projectId: "unity-msaed",
+      storageBucket: "unity-msaed.firebasestorage.app",
+      messagingSenderId: "237281388685",
+      appId: "1:237281388685:web:7f26c8afd5dcce333b1ac4",
+      measurementId: "G-2P1EY8BPN4"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'unity-msaed';
+
+    // State Variables
+    let user = null;
+    let classesData = []; // Array of { id, name, order }
+    let activeClassId = null; // Currently selected class in UI
+    let selectedAdminClassId = null; // Currently editing class in Admin panel
+
+    // Interactive Quiz State
+    let activeQuizData = null;
+    let currentQuestionIdx = 0;
+    let userAnswers = []; // Array of selected option indices
+
+    // Custom Modals Callback state
+    let confirmSuccessCallback = null;
+    let inputSuccessCallback = null;
+
+    // Default Fallback Subjects structure if a new class is made
+    const defaultSubjects = [
+      { id: 'arabic', name: 'اللغة العربية', icon: 'fa-book', color: 'from-amber-500 to-orange-600', shadow: 'shadow-orange-100', examJson: '' },
+      { id: 'english', name: 'اللغة الإنجليزية', icon: 'fa-language', color: 'from-blue-500 to-indigo-600', shadow: 'shadow-indigo-100', examJson: '' },
+      { id: 'math', name: 'الرياضيات', icon: 'fa-calculator', color: 'from-emerald-500 to-teal-600', shadow: 'shadow-emerald-100', examJson: '' },
+      { id: 'science', name: 'العلوم', icon: 'fa-flask', color: 'from-violet-500 to-purple-600', shadow: 'shadow-purple-100', examJson: '' }
+    ];
+
+    // Ensure Auth is setup (RULE 3 - Auth Before Queries + Custom Token Error Handling)
+    const initAuth = async () => {
+      try {
+        // Try authenticating with custom token first if available in active session env
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          try {
+            await signInWithCustomToken(auth, __initial_auth_token);
+            return;
+          } catch (tokenErr) {
+            console.warn("Custom token failed/mismatched. Falling back to anonymous auth safely.", tokenErr);
+          }
+        }
+        
+        // Fallback to safe Anonymous Authentication
+        await signInAnonymously(auth);
+      } catch (err) {
+        console.error("Firebase Signin fallback failed completely: ", err);
+      }
+    };
+    initAuth();
+
+    // Track Authentication state change
+    onAuthStateChanged(auth, (currentUser) => {
+      user = currentUser;
+      if (user) {
+        subscribeToClassesData();
+      }
+    });
+
+    // Custom Path Definitions (Rule 1 Compliance)
+    const getClassesCollectionRef = () => {
+      return collection(db, 'artifacts', appId, 'public', 'data', 'classes');
+    };
+
+    const getClassDocRef = (classId) => {
+      return doc(db, 'artifacts', appId, 'public', 'data', 'classes', classId);
+    };
+
+    // Setup Realtime Database Stream for Classes (Rule 2 Compliant: simple query)
+    function subscribeToClassesData() {
+      if (!user) return;
+
+      const classesRef = getClassesCollectionRef();
+      onSnapshot(classesRef, (snapshot) => {
+        classesData = [];
+        snapshot.forEach((doc) => {
+          classesData.push({ id: doc.id, ...doc.data() });
+        });
+
+        // Simple sorting in JS memory (Rule 2 Compliance: no orderBy in Firestore query)
+        classesData.sort((a, b) => (a.order || 0) - (b.order || 0));
+
+        // Seed default classes if database is completely empty
+        if (classesData.length === 0) {
+          seedInitialData();
+        } else {
+          renderStudentInterface();
+          renderAdminInterface();
+        }
+      }, (error) => {
+        console.error("Error fetching Firestore changes:", error);
+      });
+    }
+
+    // Helper to seed initial Saudi curriculum structure on first run
+    async function seedInitialData() {
+      const initialClasses = [
+        { name: "الصف الأول الابتدائي", order: 1, subjects: defaultSubjects },
+        { name: "الصف الثاني الابتدائي", order: 2, subjects: defaultSubjects },
+        { name: "الصف الثالث الابتدائي", order: 3, subjects: defaultSubjects },
+        { name: "الصف الرابع الابتدائي", order: 4, subjects: defaultSubjects },
+        { name: "الصف الخامس الابتدائي", order: 5, subjects: defaultSubjects },
+        { name: "الصف السادس الابتدائي", order: 6, subjects: defaultSubjects },
+        { name: "الصف الأول المتوسط", order: 7, subjects: defaultSubjects },
+        { name: "الصف الثاني المتوسط", order: 8, subjects: defaultSubjects },
+        { name: "الصف الثالث المتوسط", order: 9, subjects: defaultSubjects }
+      ];
+
+      for (let cls of initialClasses) {
+        const ref = getClassesCollectionRef();
+        await addDoc(ref, cls);
+      }
+    }
+
+    // --- STUDENT INTERFACE RENDER ---
+    function renderStudentInterface() {
+      const tabsContainer = document.getElementById('classesTabsList');
+      if (!tabsContainer) return;
+
+      tabsContainer.innerHTML = '';
+
+      // Determine active class if not set
+      if (!activeClassId && classesData.length > 0) {
+        activeClassId = classesData[0].id;
+      }
+
+      classesData.forEach((cls) => {
+        const isActive = cls.id === activeClassId;
+        const btn = document.createElement('button');
+        btn.className = `px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 shrink-0 ${
+          isActive 
+            ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-200' 
+            : 'bg-white text-slate-600 hover:bg-emerald-100/50 hover:text-emerald-700'
+        }`;
+        btn.textContent = cls.name;
+        btn.addEventListener('click', () => {
+          activeClassId = cls.id;
+          renderStudentInterface();
+        });
+        tabsContainer.appendChild(btn);
+      });
+
+      // Render Selected Class Subjects
+      const activeClassObj = classesData.find(c => c.id === activeClassId);
+      const titleDisplay = document.getElementById('currentClassNameDisplay');
+      const subjectsContainer = document.getElementById('subjectsContainer');
+
+      if (activeClassObj) {
+        titleDisplay.textContent = activeClassObj.name;
+        subjectsContainer.innerHTML = '';
+
+        const subjects = activeClassObj.subjects || [];
+        if (subjects.length === 0) {
+          subjectsContainer.innerHTML = `
+            <div class="col-span-full text-center py-12 bg-white rounded-3xl border border-slate-200/60 p-8 text-slate-400">
+              <i class="fa-solid fa-box-open text-4xl mb-3 block text-slate-300"></i>
+              لم تتم إضافة أي مواد دراسية لهذا الصف حتى الآن.
+            </div>
+          `;
+          return;
+        }
+
+        subjects.forEach((subj) => {
+          const card = document.createElement('div');
+          card.className = `bg-white rounded-3xl border border-slate-100 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group h-full`;
+          
+          const gradient = subj.color || 'from-emerald-500 to-teal-600';
+          const shadowClass = subj.shadow || 'shadow-emerald-100';
+          const iconClass = subj.icon || 'fa-book-open';
+
+          // Check if exam is ready (has valid json)
+          const isExamReady = subj.examJson && subj.examJson.trim().length > 0;
+
+          card.innerHTML = `
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="w-14 h-14 bg-gradient-to-tr ${gradient} rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg ${shadowClass} group-hover:scale-110 transition-transform duration-300">
+                  <i class="fa-solid ${iconClass}"></i>
+                </div>
+                ${isExamReady 
+                  ? `<span class="bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full"><i class="fa-solid fa-square-poll-vertical mr-1"></i> جاهز للاختبار</span>` 
+                  : `<span class="bg-amber-50 text-amber-700 text-xs font-bold px-3 py-1 rounded-full"><i class="fa-solid fa-hourglass-start mr-1"></i> قريباً</span>`
+                }
+              </div>
+              <div class="space-y-1">
+                <h3 class="text-lg font-bold text-slate-800">${subj.name}</h3>
+                <p class="text-xs text-slate-400">اختبر معلوماتك بطريقة تفاعلية ذكية</p>
+              </div>
+            </div>
+            
+            <div class="pt-6 mt-6 border-t border-slate-50">
+              <button class="test-btn w-full py-3.5 px-4 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${
+                isExamReady 
+                  ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-100' 
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+              }">
+                <span>اختبر الآن</span>
+                <i class="fa-solid fa-arrow-left-long text-xs group-hover:-translate-x-1 transition-transform"></i>
+              </button>
+            </div>
+          `;
+
+          // Handle quiz launch
+          card.querySelector('.test-btn').addEventListener('click', () => {
+            if (isExamReady) {
+              launchInteractiveQuiz(subj.name, subj.examJson);
+            } else {
+              showAlert('تنبيه من المشرف', 'عذراً يا بطل! لم يقم المشرف بإضافة أو ربط كود الاختبار التفاعلي لهذه المادة حتى الآن. يرجى المراجعة والتحقق لاحقاً.');
+            }
+          });
+
+          subjectsContainer.appendChild(card);
+        });
+      }
+    }
+
+    // --- INTERACTIVE QUIZ ENGINE ---
+    function launchInteractiveQuiz(subjectName, examJsonString) {
+      try {
+        activeQuizData = JSON.parse(examJsonString);
+        
+        // Basic validation of keys
+        if (!activeQuizData.questions || !Array.isArray(activeQuizData.questions) || activeQuizData.questions.length === 0) {
+          throw new Error("Missing questions array");
+        }
+
+        // Setup Player State
+        currentQuestionIdx = 0;
+        userAnswers = new Array(activeQuizData.questions.length).fill(null);
+
+        // UI Prep
+        document.getElementById('quizTitle').textContent = activeQuizData.title || `اختبار ${subjectName}`;
+        document.getElementById('quizHeaderBadge').textContent = subjectName;
+        
+        // Show start screen, hide others
+        document.getElementById('quizStartScreen').classList.remove('hidden');
+        document.getElementById('quizQuestionScreen').classList.add('hidden');
+        document.getElementById('quizResultScreen').classList.add('hidden');
+        document.getElementById('quizReviewScreen').classList.add('hidden');
+
+        // Clear older feedback references if any
+        const feed = document.getElementById('quizFeedbackContainer');
+        if (feed) feed.innerHTML = '';
+
+        openModal('quizPlayerModal');
+      } catch (e) {
+        console.error("Invalid Quiz JSON:", e);
+        showAlert('خطأ في البيانات', 'عذراً، كود الاختبار المرفوع يحتوي على خطأ في البنية وصيغة الـ JSON. الرجاء إخطار مشرف النظام لتعديله.');
+      }
+    }
+
+    // Trigger Visual Celebration/Confetti Effect
+    function triggerCelebration() {
+      const container = document.getElementById('confettiContainer');
+      if (!container) return;
+      container.innerHTML = '';
+      const colors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#ec4899', '#8b5cf6'];
+      
+      for (let i = 0; i < 40; i++) {
+        const p = document.createElement('div');
+        p.className = 'confetti-particle';
+        p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        p.style.left = Math.random() * 100 + '%';
+        p.style.top = Math.random() * 10 + '%';
+        p.style.transform = `rotate(${Math.random() * 360}deg)`;
+        
+        // Randomize fall duration and delay
+        p.style.animationDuration = (Math.random() * 0.8 + 0.8) + 's';
+        p.style.animationDelay = (Math.random() * 0.1) + 's';
+        container.appendChild(p);
+      }
+    }
+
+    // Start Quiz Button click
+    document.getElementById('startQuizBtn').addEventListener('click', () => {
+      document.getElementById('quizStartScreen').classList.add('hidden');
+      document.getElementById('quizQuestionScreen').classList.remove('hidden');
+      renderQuizQuestion();
+    });
+
+    // Render Active Quiz Question
+    function renderQuizQuestion() {
+      if (!activeQuizData) return;
+
+      const qNum = currentQuestionIdx + 1;
+      const totalQ = activeQuizData.questions.length;
+      const questionObj = activeQuizData.questions[currentQuestionIdx];
+
+      // Progress Tracker
+      document.getElementById('quizProgressText').textContent = `السؤال ${qNum} من ${totalQ}`;
+      const percentage = (qNum / totalQ) * 100;
+      document.getElementById('quizProgressBar').style.width = `${percentage}%`;
+
+      // Set Question text
+      document.getElementById('questionText').textContent = questionObj.question;
+
+      // Populate Options
+      const optionsContainer = document.getElementById('optionsContainer');
+      optionsContainer.innerHTML = '';
+
+      const savedAnswer = userAnswers[currentQuestionIdx];
+      const hasAnswered = savedAnswer !== null;
+
+      // Setup/Reset Feedback Container under options
+      let feedbackContainer = document.getElementById('quizFeedbackContainer');
+      if (!feedbackContainer) {
+        feedbackContainer = document.createElement('div');
+        feedbackContainer.id = 'quizFeedbackContainer';
+        feedbackContainer.className = 'mt-4 transition-all duration-300';
+        optionsContainer.parentNode.insertBefore(feedbackContainer, optionsContainer.nextSibling);
+      }
+      feedbackContainer.innerHTML = ''; // Reset
+
+      questionObj.options.forEach((opt, idx) => {
+        const isSelected = savedAnswer === idx;
+        const isCorrectOption = idx === questionObj.answer;
+
+        const btn = document.createElement('button');
+        let btnClasses = `w-full text-right p-4 rounded-xl border font-bold text-sm sm:text-base flex items-center justify-between transition-all duration-200 `;
+        let bulletBg = 'bg-slate-100 text-slate-500';
+        let rightIconHtml = `<span class="w-5 h-5 rounded-full border border-slate-300"></span>`;
+
+        if (!hasAnswered) {
+          // Standard interactive, active clickable state
+          btnClasses += 'bg-white border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700 active:scale-[0.99]';
+        } else {
+          // Locked State (Answer submitted)
+          btn.disabled = true;
+          btnClasses += 'pointer-events-none ';
+
+          if (isCorrectOption) {
+            // Highlight the correct option (Green)
+            btnClasses += 'bg-emerald-50 border-emerald-500 text-emerald-900 ring-2 ring-emerald-500/20';
+            bulletBg = 'bg-emerald-600 text-white';
+            rightIconHtml = `<i class="fa-solid fa-circle-check text-emerald-600 text-lg animate-bounce-subtle"></i>`;
+          } else if (isSelected) {
+            // Selected but incorrect (Red)
+            btnClasses += 'bg-rose-50 border-rose-300 text-rose-950 ring-2 ring-rose-500/20';
+            bulletBg = 'bg-rose-600 text-white';
+            rightIconHtml = `<i class="fa-solid fa-circle-xmark text-rose-600 text-lg animate-shake"></i>`;
+          } else {
+            // Non-selected incorrect options (Dimmed)
+            btnClasses += 'bg-white border-slate-100 text-slate-400 opacity-50';
+          }
+        }
+
+        const bulletChar = String.fromCharCode(65 + idx); // A, B, C, D...
+        btn.className = btnClasses;
+        btn.innerHTML = `
+          <div class="flex items-center space-x-reverse space-x-3">
+            <span class="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-extrabold ${bulletBg} transition-all duration-200">${bulletChar}</span>
+            <span>${opt}</span>
+          </div>
+          ${rightIconHtml}
+        `;
+
+        if (!hasAnswered) {
+          btn.addEventListener('click', () => {
+            userAnswers[currentQuestionIdx] = idx;
+            
+            // Check if user answer is correct to trigger celebration confetti
+            const isCorrect = idx === questionObj.answer;
+            if (isCorrect) {
+              triggerCelebration();
+            }
+
+            renderQuizQuestion(); // Instant state update with highlight colours and lock
+          });
+        }
+
+        optionsContainer.appendChild(btn);
+      });
+
+      // Show Feedback Banner if question has been answered
+      if (hasAnswered) {
+        const isUserCorrect = savedAnswer === questionObj.answer;
+        const banner = document.createElement('div');
+        
+        if (isUserCorrect) {
+          banner.className = 'p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-3 animate-bounce-subtle';
+          banner.innerHTML = `
+            <div class="text-2xl"><i class="fa-solid fa-circle-check text-emerald-600"></i></div>
+            <div>
+              <h5 class="font-extrabold text-sm sm:text-base">إجابة صحيحة! أحسنت يا بطل 🌟</h5>
+              <p class="text-xs text-emerald-600 mt-0.5">لقد اخترت الخيار الصحيح بنجاح، واصل هذا التألق والذكاء!</p>
+            </div>
+          `;
+        } else {
+          banner.className = 'p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 flex items-center gap-3 animate-shake';
+          banner.innerHTML = `
+            <div class="text-2xl text-rose-500"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <div>
+              <h5 class="font-extrabold text-sm sm:text-base">للأسف الإجابة غير صحيحة! 💪</h5>
+              <p class="text-xs text-rose-600 mt-0.5">لا بأس بالخطأ، ركز جيداً وتعلم من الخيار الصحيح المظلل بالأخضر.</p>
+            </div>
+          `;
+        }
+        feedbackContainer.appendChild(banner);
+      }
+
+      // Navigation Buttons state
+      const prevBtn = document.getElementById('prevQuestionBtn');
+      const nextBtn = document.getElementById('nextQuestionBtn');
+      const nextBtnText = document.getElementById('nextBtnText');
+      const nextBtnIcon = document.getElementById('nextBtnIcon');
+
+      // Previous logic
+      if (currentQuestionIdx === 0) {
+        prevBtn.classList.add('opacity-40', 'pointer-events-none');
+      } else {
+        prevBtn.classList.remove('opacity-40', 'pointer-events-none');
+      }
+
+      // Next / Finish interactive block
+      // Lock navigation to Next unless the active question is answered!
+      if (!hasAnswered) {
+        nextBtn.classList.add('opacity-50', 'pointer-events-none');
+      } else {
+        nextBtn.classList.remove('opacity-50', 'pointer-events-none');
+      }
+
+      // Next / Finish text toggle
+      if (currentQuestionIdx === totalQ - 1) {
+        nextBtnText.textContent = "إنهاء الاختبار وتحصيل الدرجة";
+        nextBtnIcon.className = "fa-solid fa-circle-check";
+      } else {
+        nextBtnText.textContent = "السؤال التالي";
+        nextBtnIcon.className = "fa-solid fa-arrow-left";
+      }
+    }
+
+    // Next / Finish Quiz Event
+    document.getElementById('nextQuestionBtn').addEventListener('click', () => {
+      // Validate that an answer is selected
+      if (userAnswers[currentQuestionIdx] === null) {
+        showAlert('تنبيه اختيار الإجابة', 'الرجاء تحديد إجابة أولاً ليتم تصحيحها والانتقال للأمام يا بطل! 🌟');
+        return;
+      }
+
+      const totalQ = activeQuizData.questions.length;
+      if (currentQuestionIdx < totalQ - 1) {
+        currentQuestionIdx++;
+        renderQuizQuestion();
+      } else {
+        calculateAndDisplayResults();
+      }
+    });
+
+    // Previous Question Event
+    document.getElementById('prevQuestionBtn').addEventListener('click', () => {
+      if (currentQuestionIdx > 0) {
+        currentQuestionIdx--;
+        renderQuizQuestion();
+      }
+    });
+
+    // Calculate Quiz Results
+    function calculateAndDisplayResults() {
+      let correctCount = 0;
+      activeQuizData.questions.forEach((q, idx) => {
+        if (userAnswers[idx] === q.answer) {
+          correctCount++;
+        }
+      });
+
+      const totalQ = activeQuizData.questions.length;
+      const pct = Math.round((correctCount / totalQ) * 100);
+
+      // DOM updates
+      document.getElementById('resultCorrectCount').textContent = `${correctCount} / ${totalQ}`;
+      document.getElementById('resultPercentage').textContent = `${pct}%`;
+
+      const greeting = document.getElementById('resultGreeting');
+      const feedback = document.getElementById('resultFeedback');
+      const iconBox = document.getElementById('resultIconBox');
+
+      // Change design based on performance
+      if (pct >= 85) {
+        greeting.textContent = "ممتاز جداً! 🎉";
+        feedback.textContent = "أنت بطل رائع وذكي جداً! واصل هذا التميز والتألق في المناهج دائماً.";
+        iconBox.className = "w-24 h-24 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-5xl";
+        iconBox.innerHTML = '<i class="fa-solid fa-trophy"></i>';
+      } else if (pct >= 50) {
+        greeting.textContent = "عمل جيد ومثابر! 👍";
+        feedback.textContent = "أداء طيب، وتستطيع تحقيق النتيجة الكاملة في المرة القادمة مع القليل من التركيز والجد.";
+        iconBox.className = "w-24 h-24 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto text-5xl";
+        iconBox.innerHTML = '<i class="fa-solid fa-star"></i>';
+      } else {
+        greeting.textContent = "حاول مجدداً يا بطل! 💪";
+        feedback.textContent = "لا بأس بالخطأ، فهو طريق التعلم الأول. أعد محاولة الاختبار وستحقق درجة أفضل بالتأكيد.";
+        iconBox.className = "w-24 h-24 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto text-5xl";
+        iconBox.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i>';
+      }
+
+      // Views toggler
+      document.getElementById('quizQuestionScreen').classList.add('hidden');
+      document.getElementById('quizResultScreen').classList.remove('hidden');
+    }
+
+    // Restart Quiz Event
+    document.getElementById('restartQuizBtn').addEventListener('click', () => {
+      userAnswers = new Array(activeQuizData.questions.length).fill(null);
+      currentQuestionIdx = 0;
+      document.getElementById('quizResultScreen').classList.add('hidden');
+      document.getElementById('quizQuestionScreen').classList.remove('hidden');
+      renderQuizQuestion();
+    });
+
+    // Close Player safely
+    document.getElementById('closeQuizPlayerBtn').addEventListener('click', () => {
+      closeModal('quizPlayerModal');
+    });
+
+    // --- REVIEWS ANSWERS VIEW ---
+    document.getElementById('reviewAnswersBtn').addEventListener('click', () => {
+      document.getElementById('quizResultScreen').classList.add('hidden');
+      document.getElementById('quizReviewScreen').classList.remove('hidden');
+
+      const reviewContainer = document.getElementById('reviewListContainer');
+      reviewContainer.innerHTML = '';
+
+      activeQuizData.questions.forEach((q, idx) => {
+        const selectedOptIdx = userAnswers[idx];
+        const correctOptIdx = q.answer;
+        const isCorrect = selectedOptIdx === correctOptIdx;
+
+        const reviewCard = document.createElement('div');
+        // Elegant border styling based on correctness
+        reviewCard.className = `p-5 rounded-3xl border ${isCorrect ? 'border-emerald-200 bg-emerald-50/10' : 'border-rose-200 bg-rose-50/10'} space-y-4`;
+
+        // Render all 4 options for this question inside the review
+        let optionsHtml = '';
+        q.options.forEach((opt, optIdx) => {
+          const isSelected = selectedOptIdx === optIdx;
+          const isCorrectOption = optIdx === correctOptIdx;
+          const bulletChar = String.fromCharCode(65 + optIdx);
+
+          let optClass = 'w-full text-right p-3.5 rounded-xl border text-sm flex items-center justify-between transition-all duration-150 ';
+          let bulletClass = 'w-7 h-7 rounded-lg flex items-center justify-center text-xs font-extrabold ';
+          let iconHtml = '';
+          let labelHtml = '';
+
+          if (isSelected && isCorrectOption) {
+            // Correct selected option
+            optClass += 'bg-emerald-100 border-emerald-500 text-emerald-950 font-bold shadow-sm';
+            bulletClass += 'bg-emerald-600 text-white';
+            iconHtml = '<i class="fa-solid fa-circle-check text-emerald-600 text-lg"></i>';
+            labelHtml = '<span class="text-xs text-emerald-700 bg-emerald-50/80 px-2 py-1 rounded-md font-extrabold">إجابتك الصحيحة ✅</span>';
+          } else if (isSelected && !isCorrectOption) {
+            // Incorrect selected option
+            optClass += 'bg-rose-100 border-rose-400 text-rose-950 font-bold shadow-sm';
+            bulletClass += 'bg-rose-600 text-white';
+            iconHtml = '<i class="fa-solid fa-circle-xmark text-rose-600 text-lg"></i>';
+            labelHtml = '<span class="text-xs text-rose-700 bg-rose-50/80 px-2 py-1 rounded-md font-extrabold">إجابتك الخاطئة ❌</span>';
+          } else if (!isSelected && isCorrectOption) {
+            // Correct option but not selected by user
+            optClass += 'bg-emerald-50 border-emerald-400 text-emerald-900 font-bold';
+            bulletClass += 'bg-emerald-500 text-white';
+            iconHtml = '<i class="fa-solid fa-check text-emerald-600 text-lg"></i>';
+            labelHtml = '<span class="text-xs text-emerald-700 bg-emerald-50/80 px-2 py-1 rounded-md font-extrabold">الإجابة الصحيحة المعتمدة</span>';
+          } else {
+            // Unselected neutral options
+            optClass += 'bg-white border-slate-200 text-slate-400 opacity-60';
+            bulletClass += 'bg-slate-100 text-slate-400';
+          }
+
+          optionsHtml += `
+            <div class="${optClass}">
+              <div class="flex items-center space-x-reverse space-x-3">
+                <span class="${bulletClass}">${bulletChar}</span>
+                <span>${opt}</span>
+              </div>
+              <div class="flex items-center space-x-reverse space-x-2">
+                ${labelHtml}
+                ${iconHtml}
+              </div>
+            </div>
+          `;
+        });
+
+        reviewCard.innerHTML = `
+          <div class="space-y-3">
+            <div class="flex items-start justify-between gap-3 pb-2 border-b border-slate-100">
+              <h5 class="font-bold text-slate-800 text-sm sm:text-base leading-relaxed">س${idx + 1}: ${q.question}</h5>
+              <span class="shrink-0 text-xs font-bold px-2.5 py-1 rounded-full ${
+                isCorrect ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
+              }">
+                <i class="fa-solid ${isCorrect ? 'fa-check-double' : 'fa-triangle-exclamation'} mr-1"></i>
+                ${isCorrect ? 'إجابة صحيحة' : 'إجابة خاطئة'}
+              </span>
+            </div>
+            <div class="grid grid-cols-1 gap-2.5">
+              ${optionsHtml}
+            </div>
+          </div>
+        `;
+
+        reviewContainer.appendChild(reviewCard);
+      });
+    });
+
+    document.getElementById('backToResultBtn').addEventListener('click', () => {
+      document.getElementById('quizReviewScreen').classList.add('hidden');
+      document.getElementById('quizResultScreen').classList.remove('hidden');
+    });
+
+    // --- ADMIN INTERFACE RENDER ---
+    function renderAdminInterface() {
+      const adminClassesList = document.getElementById('adminClassesList');
+      if (!adminClassesList) return;
+
+      adminClassesList.innerHTML = '';
+
+      classesData.forEach((cls) => {
+        const isEditingThis = cls.id === selectedAdminClassId;
+        const item = document.createElement('div');
+        item.className = `p-3 rounded-2xl flex items-center justify-between transition-all ${
+          isEditingThis 
+            ? 'bg-emerald-50 border border-emerald-200/80 text-emerald-900 font-semibold' 
+            : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-100'
+        }`;
+
+        item.innerHTML = `
+          <button class="select-class-btn text-right flex-grow font-bold text-sm truncate pl-2">
+            ${cls.name}
+          </button>
+          <div class="flex items-center space-x-reverse space-x-1 shrink-0">
+            <button class="edit-name-btn text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-white transition-colors" title="تعديل الاسم">
+              <i class="fa-solid fa-pen text-xs"></i>
+            </button>
+            <button class="delete-class-btn text-rose-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 transition-colors" title="حذف الصف">
+              <i class="fa-solid fa-trash-can text-xs"></i>
+            </button>
+          </div>
+        `;
+
+        item.querySelector('.select-class-btn').addEventListener('click', () => {
+          selectAdminClass(cls.id);
+        });
+
+        item.querySelector('.edit-name-btn').addEventListener('click', () => {
+          openInputModal('أدخل الاسم الجديد للصف الدراسي:', cls.name, (newName) => {
+            updateClassName(cls.id, newName);
+          });
+        });
+
+        item.querySelector('.delete-class-btn').addEventListener('click', () => {
+          openConfirmModal(
+            'حذف الصف الدراسي',
+            `هل أنت متأكد من حذف صف "${cls.name}" مع جميع مواده؟ لا يمكن التراجع عن هذا القرار نهائياً.`,
+            'fa-trash-can',
+            'bg-rose-50 text-rose-500',
+            'bg-rose-600 hover:bg-rose-700',
+            () => {
+              deleteClass(cls.id);
+            }
+          );
+        });
+
+        adminClassesList.appendChild(item);
+      });
+
+      renderSelectedClassSubjectsManager();
+    }
+
+    function selectAdminClass(classId) {
+      selectedAdminClassId = classId;
+      const activeClass = classesData.find(c => c.id === classId);
+      const displayLabel = document.getElementById('adminSelectedClassName');
+      if (displayLabel && activeClass) {
+        displayLabel.textContent = activeClass.name;
+      }
+      renderAdminInterface();
+    }
+
+    async function updateClassName(classId, newName) {
+      if (!user) return;
+      try {
+        const classRef = getClassDocRef(classId);
+        await updateDoc(classRef, { name: newName });
+        showToast("تم تحديث اسم الصف بنجاح!");
+      } catch (err) {
+        console.error("Failed to rename class: ", err);
+        showToast("فشل تحديث الاسم، يرجى المحاولة لاحقاً", false);
+      }
+    }
+
+    async function deleteClass(classId) {
+      if (!user) return;
+      try {
+        const classRef = getClassDocRef(classId);
+        await deleteDoc(classRef);
+        showToast("تم حذف الصف الدراسي بنجاح!");
+        if (selectedAdminClassId === classId) {
+          selectedAdminClassId = null;
+          const displayLabel = document.getElementById('adminSelectedClassName');
+          if (displayLabel) displayLabel.textContent = "يرجى اختيار صف";
+        }
+      } catch (err) {
+        console.error("Failed to delete class: ", err);
+        showToast("فشل حذف الصف الدراسي", false);
+      }
+    }
+
+    // Render Subjects Editor inside Admin Console
+    function renderSelectedClassSubjectsManager() {
+      const container = document.getElementById('adminSubjectsController');
+      if (!container) return;
+
+      const activeClass = classesData.find(c => c.id === selectedAdminClassId);
+      if (!activeClass) {
+        container.innerHTML = `
+          <div class="text-center py-12 text-slate-400">
+            <i class="fa-solid fa-hand-pointer text-4xl mb-3 block text-slate-300"></i>
+            يرجى اختيار صف دراسي من القائمة الجانبية لبدء تعديل المواد والاختبارات.
+          </div>
+        `;
+        return;
+      }
+
+      const subjects = activeClass.subjects || [];
+      container.innerHTML = '';
+
+      // Controls to add a custom subject
+      const addSubjectHeader = document.createElement('div');
+      addSubjectHeader.className = 'bg-emerald-50/50 p-4 rounded-2xl border border-emerald-100/60 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4';
+      addSubjectHeader.innerHTML = `
+        <div>
+          <h4 class="text-sm font-bold text-emerald-900">إضافة مادة مخصصة جديدة</h4>
+          <p class="text-xs text-emerald-700">أضف مواد إضافية بجانب المواد الأساسية.</p>
+        </div>
+        <button id="addSubjectBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all flex items-center gap-1.5 self-end sm:self-auto">
+          <i class="fa-solid fa-plus-circle"></i>
+          <span>إضافة مادة</span>
+        </button>
+      `;
+      addSubjectHeader.querySelector('#addSubjectBtn').addEventListener('click', () => {
+        addNewSubjectPrompt(activeClass.id, subjects);
+      });
+      container.appendChild(addSubjectHeader);
+
+      // Render individual subject editors
+      const subjectsListWrap = document.createElement('div');
+      subjectsListWrap.className = 'space-y-4';
+
+      subjects.forEach((subj, idx) => {
+        const item = document.createElement('div');
+        item.className = 'bg-slate-50 rounded-2xl p-4 sm:p-5 border border-slate-200/50 space-y-4';
+        
+        // Setup initial validation message state
+        let validationMsgHtml = `<span class="text-slate-400 font-medium"><i class="fa-solid fa-info-circle"></i> بانتظار إدخال كود JSON</span>`;
+        let validationBorder = 'border-slate-200';
+        if (subj.examJson && subj.examJson.trim().length > 0) {
+          try {
+            JSON.parse(subj.examJson);
+            validationMsgHtml = `<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> كود الـ JSON جاهز وصحيح للاستخدام ✅</span>`;
+            validationBorder = 'border-emerald-300';
+          } catch (e) {
+            validationMsgHtml = `<span class="text-amber-500 font-bold"><i class="fa-solid fa-triangle-exclamation"></i> صيغة الـ JSON غير صالحة ❌ يرجى مراجعتها</span>`;
+            validationBorder = 'border-amber-300';
+          }
+        }
+
+        item.innerHTML = `
+          <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+            <div class="flex items-center space-x-reverse space-x-3">
+              <div class="w-10 h-10 rounded-xl bg-slate-200 text-slate-600 flex items-center justify-center text-lg">
+                <i class="fa-solid ${subj.icon || 'fa-book-open'}"></i>
+              </div>
+              <div class="flex-grow">
+                <input type="text" value="${subj.name}" class="subj-name-input bg-transparent border-b border-transparent hover:border-slate-300 focus:border-emerald-600 focus:outline-none font-bold text-slate-800 text-base py-0.5 transition-all w-full sm:w-auto" placeholder="اسم المادة">
+              </div>
+            </div>
+            <div class="flex items-center space-x-reverse space-x-2">
+              <button class="copy-prompt-btn bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1" title="توليد موجه الذكاء الاصطناعي">
+                <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
+                <span>نسخ موجه الـ AI (Prompt)</span>
+              </button>
+              <button class="delete-subj-btn text-rose-500 hover:text-rose-700 text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-rose-50 transition-colors flex items-center gap-1">
+                <i class="fa-solid fa-trash-can"></i>
+                <span>حذف</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div class="md:col-span-2 space-y-1.5">
+              <div class="flex justify-between items-center">
+                <label class="block text-xs font-bold text-slate-500">أدخل كود الـ JSON الخاص بالاختبار</label>
+                <div class="text-xs" id="validatorMsg_${subj.id}">${validationMsgHtml}</div>
+              </div>
+              <textarea rows="4" id="jsonArea_${subj.id}" class="subj-json-input w-full p-3 font-mono text-xs border ${validationBorder} rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all bg-white custom-scrollbar" placeholder='{\n  "title": "اختبار المادة",\n  "questions": []\n}'>${subj.examJson || ''}</textarea>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-500 mb-1">تعديل أيقونة المادة</label>
+              <select class="subj-icon-select w-full px-2 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all bg-white">
+                <option value="fa-book" ${subj.icon === 'fa-book' ? 'selected' : ''}>كتاب عربي</option>
+                <option value="fa-language" ${subj.icon === 'fa-language' ? 'selected' : ''}>لغة إنجليزية</option>
+                <option value="fa-calculator" ${subj.icon === 'fa-calculator' ? 'selected' : ''}>آلة حاسبة رياضيات</option>
+                <option value="fa-flask" ${subj.icon === 'fa-flask' ? 'selected' : ''}>مختبر علوم</option>
+                <option value="fa-mosque" ${subj.icon === 'fa-mosque' ? 'selected' : ''}>مسجد/تربية إسلامية</option>
+                <option value="fa-lightbulb" ${subj.icon === 'fa-lightbulb' ? 'selected' : ''}>فكرة/ذكاء</option>
+                <option value="fa-laptop-code" ${subj.icon === 'fa-laptop-code' ? 'selected' : ''}>حاسب آلي</option>
+                <option value="fa-paint-brush" ${subj.icon === 'fa-paint-brush' ? 'selected' : ''}>تربية فنية</option>
+              </select>
+            </div>
+          </div>
+        `;
+
+        const nameInput = item.querySelector('.subj-name-input');
+        const jsonArea = item.querySelector('.subj-json-input');
+        const iconSelect = item.querySelector('.subj-icon-select');
+        const deleteBtn = item.querySelector('.delete-subj-btn');
+        const copyPromptBtn = item.querySelector('.copy-prompt-btn');
+
+        // Dynamic validator helper
+        const performLiveValidation = (txtVal) => {
+          const statusContainer = document.getElementById(`validatorMsg_${subj.id}`);
+          if (!txtVal || txtVal.trim().length === 0) {
+            statusContainer.innerHTML = `<span class="text-slate-400 font-medium"><i class="fa-solid fa-info-circle"></i> بانتظار إدخال كود JSON</span>`;
+            jsonArea.className = "subj-json-input w-full p-3 font-mono text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all bg-white custom-scrollbar";
+            return;
+          }
+          try {
+            JSON.parse(txtVal);
+            statusContainer.innerHTML = `<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> كود الـ JSON جاهز وصحيح للاستخدام ✅</span>`;
+            jsonArea.className = "subj-json-input w-full p-3 font-mono text-xs border border-emerald-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all bg-white custom-scrollbar";
+          } catch(err) {
+            statusContainer.innerHTML = `<span class="text-amber-500 font-bold"><i class="fa-solid fa-triangle-exclamation"></i> صيغة الـ JSON غير صالحة ❌ يرجى مراجعتها</span>`;
+            jsonArea.className = "subj-json-input w-full p-3 font-mono text-xs border border-amber-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all bg-white custom-scrollbar";
+          }
+        };
+
+        const triggerSave = async () => {
+          const updatedSubjects = [...subjects];
+          updatedSubjects[idx] = {
+            ...updatedSubjects[idx],
+            name: nameInput.value.trim(),
+            examJson: jsonArea.value,
+            icon: iconSelect.value
+          };
+          await saveClassSubjects(activeClass.id, updatedSubjects);
+          showToast("تم حفظ تعديلات المادة بنجاح!");
+        };
+
+        // Live Validate as typing
+        jsonArea.addEventListener('input', (e) => {
+          performLiveValidation(e.target.value);
+        });
+
+        nameInput.addEventListener('change', triggerSave);
+        jsonArea.addEventListener('change', triggerSave);
+        iconSelect.addEventListener('change', triggerSave);
+
+        // Prompt Creator Button handler
+        copyPromptBtn.addEventListener('click', () => {
+          const promptText = `أنت معلم خبير متمرس في المناهج والمقررات السعودية المعتمدة حديثاً.
+أريد منك كتابة اختبار مميز وتفاعلي لمادة [${subj.name}] لطلاب [${activeClass.name}].
+الاختبار يجب أن يحتوي على 5 أسئلة اختيار من متعدد مشوقة، ممتعة، ومناسبة لسن وقدرات الطلاب.
+أريد منك إعطائي النتيجة النهائية كملف JSON فقط، بدون أي مقدمات أو مؤخرات أو شرح أو علامات اقتباس مسبقة، لكي أقوم بنسخه مباشرة إلى نظامي التفاعلي.
+
+تأكد أن صيغة الـ JSON تكون كالتالي تماماً:
+{
+  "title": "اختبار مادة ${subj.name} - ${activeClass.name}",
+  "questions": [
+    {
+      "question": "اكتب نص السؤال هنا بشكل واضح وصحيح لغوياً؟",
+      "options": ["الخيار الأول", "الخيار الثاني", "الخيار الثالث", "الخيار الرابع"],
+      "answer": 0
+    }
+  ]
+}
+
+تنبيه شديد الأهمية: حقل "answer" هو رقم صحيح يبدأ من 0 وهو يمثل ترتيب الإجابة الصحيحة المعتمدة في قائمة الخيارات (مثلاً إذا كانت الإجابة الصحيحة هي الخيار الأول ضع 0، الخيار الثاني ضع 1، الخيار الثالث ضع 2، الخيار الرابع ضع 3).`;
+
+          copyTextToClipboard(promptText);
+        });
+
+        deleteBtn.addEventListener('click', () => {
+          openConfirmModal(
+            'حذف المادة الدراسية',
+            `هل أنت متأكد من حذف مادة "${subj.name}"؟`,
+            'fa-trash-can',
+            'bg-rose-50 text-rose-500',
+            'bg-rose-600 hover:bg-rose-700',
+            async () => {
+              const updatedSubjects = subjects.filter((_, i) => i !== idx);
+              await saveClassSubjects(activeClass.id, updatedSubjects);
+              showToast("تم حذف المادة بنجاح!");
+            }
+          );
+        });
+
+        subjectsListWrap.appendChild(item);
+      });
+
+      container.appendChild(subjectsListWrap);
+    }
+
+    // Helper: Clipboarding & Global Toast System
+    function showToast(message, isSuccess = true) {
+      const toast = document.getElementById('copyToast');
+      if (!toast) return;
+      const toastText = toast.querySelector('span');
+      const toastIcon = toast.querySelector('i');
+      
+      if (isSuccess) {
+        toastIcon.className = "fa-solid fa-circle-check text-emerald-500";
+        toast.className = "fixed bottom-5 left-5 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl z-50 flex items-center gap-2 transform translate-y-0 opacity-100 transition-all duration-300";
+      } else {
+        toastIcon.className = "fa-solid fa-circle-exclamation text-rose-500";
+        toast.className = "fixed bottom-5 left-5 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl z-50 flex items-center gap-2 transform translate-y-0 opacity-100 transition-all duration-300";
+      }
+      toastText.textContent = message;
+      
+      setTimeout(() => {
+        toast.className = "fixed bottom-5 left-5 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl z-50 flex items-center gap-2 transform translate-y-20 opacity-0 transition-all duration-300";
+      }, 3000);
+    }
+
+    function copyTextToClipboard(text) {
+      const dummy = document.createElement("textarea");
+      document.body.appendChild(dummy);
+      dummy.value = text;
+      dummy.select();
+      document.execCommand("copy");
+      document.body.removeChild(dummy);
+
+      showToast("تم نسخ موجه الـ AI بنجاح!");
+    }
+
+    // Helper: Push subjects list updates to Firestore
+    async function saveClassSubjects(classId, updatedSubjects) {
+      if (!user) return;
+      try {
+        const classRef = getClassDocRef(classId);
+        await updateDoc(classRef, { subjects: updatedSubjects });
+      } catch (err) {
+        console.error("Failed to update subjects structure: ", err);
+        showToast("فشل حفظ التعديلات", false);
+      }
+    }
+
+    // Helper: Modal to add new subject
+    function addNewSubjectPrompt(classId, existingSubjects) {
+      openInputModal('أدخل اسم المادة الجديدة (مثال: الحاسب الآلي):', '', async (subjectName) => {
+        const gradients = [
+          { color: 'from-amber-500 to-orange-600', shadow: 'shadow-orange-100' },
+          { color: 'from-blue-500 to-indigo-600', shadow: 'shadow-indigo-100' },
+          { color: 'from-emerald-500 to-teal-600', shadow: 'shadow-emerald-100' },
+          { color: 'from-violet-500 to-purple-600', shadow: 'shadow-purple-100' },
+          { color: 'from-rose-500 to-pink-600', shadow: 'shadow-pink-100' },
+          { color: 'from-cyan-500 to-blue-600', shadow: 'shadow-blue-100' }
+        ];
+        const randomGradient = gradients[Math.floor(Math.random() * gradients.length)];
+
+        const newSubject = {
+          id: 'subject_' + Date.now(),
+          name: subjectName,
+          icon: 'fa-book-open',
+          color: randomGradient.color,
+          shadow: randomGradient.shadow,
+          examJson: ''
+        };
+
+        const updatedSubjects = [...existingSubjects, newSubject];
+        await saveClassSubjects(classId, updatedSubjects);
+        showToast("تمت إضافة المادة بنجاح!");
+      });
+    }
+
+    // Action: Create a brand new Class structure
+    document.getElementById('addNewClassBtn').addEventListener('click', async () => {
+      const input = document.getElementById('newClassNameInput');
+      const name = input.value.trim();
+      if (!name) return;
+
+      const nextOrder = classesData.length > 0 ? Math.max(...classesData.map(c => c.order || 0)) + 1 : 1;
+
+      try {
+        const ref = getClassesCollectionRef();
+        await addDoc(ref, {
+          name: name,
+          order: nextOrder,
+          subjects: defaultSubjects
+        });
+        input.value = '';
+        showToast("تمت إضافة الصف الجديد بنجاح!");
+      } catch (err) {
+        console.error("Failed to add class: ", err);
+        showToast("فشل إضافة الصف الدراسي", false);
+      }
+    });
+
+    // --- APP AUTH / LOGIN / LOGOUT MODALS CONTROLS ---
+
+    window.openModal = function(modalId) {
+      const modal = document.getElementById(modalId);
+      if (!modal) return;
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        const content = modal.querySelector('.transform');
+        if (content) {
+          content.classList.remove('scale-95', 'opacity-0');
+          content.classList.add('scale-100', 'opacity-100');
+        }
+      }, 50);
+    };
+
+    window.closeModal = function(modalId) {
+      const modal = document.getElementById(modalId);
+      if (!modal) return;
+      const content = modal.querySelector('.transform');
+      if (content) {
+        content.classList.add('scale-95', 'opacity-0');
+        content.classList.remove('scale-100', 'opacity-100');
+      }
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 200);
+    };
+
+    window.showAlert = function(title, msg) {
+      const titleEl = document.getElementById('alertTitle');
+      const msgEl = document.getElementById('alertMessage');
+      if (titleEl && msgEl) {
+        titleEl.textContent = title;
+        msgEl.textContent = msg;
+        openModal('customAlert');
+      }
+    };
+
+    // Universal custom confirm modal implementation
+    window.openConfirmModal = function(title, message, iconClass, iconBgColorClass, btnColorClass, onConfirm) {
+      document.getElementById('confirmTitle').textContent = title;
+      document.getElementById('confirmMessage').textContent = message;
+      
+      const iconEl = document.getElementById('confirmIcon');
+      iconEl.className = `w-16 h-16 rounded-full flex items-center justify-center mx-auto text-2xl ${iconBgColorClass}`;
+      iconEl.innerHTML = `<i class="fa-solid ${iconClass}"></i>`;
+
+      const submitBtn = document.getElementById('confirmSubmitBtn');
+      submitBtn.className = `flex-1 text-white font-bold py-2.5 px-4 rounded-xl transition-colors text-sm ${btnColorClass}`;
+
+      confirmSuccessCallback = onConfirm;
+      openModal('confirmModal');
+    };
+
+    document.getElementById('confirmCancelBtn').addEventListener('click', () => {
+      closeModal('confirmModal');
+      confirmSuccessCallback = null;
+    });
+
+    document.getElementById('confirmSubmitBtn').addEventListener('click', () => {
+      if (confirmSuccessCallback) confirmSuccessCallback();
+      closeModal('confirmModal');
+      confirmSuccessCallback = null;
+    });
+
+    // Universal custom input modal implementation
+    window.openInputModal = function(title, defaultValue, onSubmit) {
+      document.getElementById('inputModalTitle').textContent = title;
+      const inputEl = document.getElementById('modalTextInput');
+      inputEl.value = defaultValue;
+      inputSuccessCallback = onSubmit;
+      openModal('inputModal');
+      setTimeout(() => inputEl.focus(), 250);
+    };
+
+    document.getElementById('inputModalSubmitBtn').addEventListener('click', () => {
+      const inputVal = document.getElementById('modalTextInput').value.trim();
+      if (inputSuccessCallback && inputVal !== '') {
+        inputSuccessCallback(inputVal);
+      }
+      closeModal('inputModal');
+      inputSuccessCallback = null;
+    });
+
+    // Support Enter key inside input modal text fields
+    document.getElementById('modalTextInput').addEventListener('keyup', (e) => {
+      if (e.key === 'Enter') {
+        document.getElementById('inputModalSubmitBtn').click();
+      }
+    });
+
+    document.getElementById('adminBtn').addEventListener('click', () => {
+      if (localStorage.getItem('isAdminAuth') === 'true') {
+        openModal('adminDashboardModal');
+        if (!selectedAdminClassId && classesData.length > 0) {
+          selectAdminClass(classesData[0].id);
+        }
+      } else {
+        openModal('loginModal');
+      }
+    });
+
+    document.getElementById('submitLoginBtn').addEventListener('click', () => {
+      const passwordInput = document.getElementById('adminPassword');
+      const errEl = document.getElementById('loginError');
+
+      if (passwordInput.value === 'moh2022m') {
+        errEl.classList.add('hidden');
+        passwordInput.value = '';
+        localStorage.setItem('isAdminAuth', 'true');
+        closeModal('loginModal');
+        
+        setTimeout(() => {
+          openModal('adminDashboardModal');
+          if (!selectedAdminClassId && classesData.length > 0) {
+            selectAdminClass(classesData[0].id);
+          }
+        }, 300);
+      } else {
+        errEl.classList.remove('hidden');
+      }
+    });
+
+    document.getElementById('adminPassword').addEventListener('keyup', (e) => {
+      if (e.key === 'Enter') {
+        document.getElementById('submitLoginBtn').click();
+      }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('isAdminAuth');
+      closeModal('adminDashboardModal');
+    });
+
+  </script>
+</body>
+</html>
